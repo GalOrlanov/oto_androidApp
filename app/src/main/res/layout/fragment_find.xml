@@ -11,7 +11,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/autocomplete_fragment"
+            android:layout_above="@id/find_to_ac"
             android:text="Search a ride:"
             android:textColor="@color/orange"
             android:textSize="30dp"
@@ -24,56 +24,59 @@
             android:id="@+id/car"
             android:layout_width="45dp"
             android:layout_height="39dp"
-            android:layout_below="@id/search_for_ride"
             android:layout_marginTop="3dp"
             android:src="@drawable/ic_car" />
+
     </LinearLayout>
     <fragment
-        android:id="@+id/autocomplete_fragment"
+        android:id="@+id/find_to_ac"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="From:"/>
+        android:layout_marginTop="100dp"
+        android:gravity="center"
 
-    <fragment
-        android:id="@+id/auto_complete_fragment"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/autocomplete_fragment"
-        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
         android:text="To:"/>
 
-    <Button
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
+    <fragment
+        android:id="@+id/find_from_ac"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/autocomplete_fragment"
-        android:layout_marginTop="115dp"
-        android:layout_centerHorizontal="true"
-        android:background="@color/orange"
-        android:paddingTop="10dp"
-        android:text="pick Date" />
+        android:layout_below="@id/find_to_ac"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:text="From:"/>
 
-    <TextView
-        android:id="@+id/date_show"
-        android:layout_width="wrap_content"
+
+
+
+    <EditText
+        android:id="@+id/date"
+        android:layout_width="226dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/date"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:textStyle="bold"
-        android:textSize="20dp"
-        />
+        android:layout_below="@id/find_from_ac"
+        android:layout_marginTop="80dp"
+        android:layout_centerInParent="true"
+
+        android:hint="Choose Date " />
+
 
     <EditText
         android:id="@+id/time"
         android:layout_width="226dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/date"
+        android:gravity="center"
+
+        android:layout_centerInParent="true"
         android:layout_marginTop="50dp"
-        android:hint="Choose the time: " />
+        android:hint="Choose time " />
 
 
     <Button

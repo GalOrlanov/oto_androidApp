@@ -1,5 +1,4 @@
 package com.example.oto;
-
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
@@ -49,55 +48,7 @@ public class RegisterStep2Activity extends AppCompatActivity {
                 App.setCity(cityInput.getText().toString());
                 App.setCountry(countryInput.getText().toString());
                 App.setPhone(phoneInput.getText().toString());
-
-                //TODO: Ziv - Server Connection - Register Step 1 And 2 - Need To Do The Transformation Of Data To The Server.
-
-                /*    Start communication to server    */
-
-                JSONObject obj = new JSONObject();
-                try{
-                    obj.put("firstname", App.getFirstName());
-                    obj.put("lastname",App.getLastName());
-                    obj.put("phone",App.getPhone());
-                    obj.put("address",App.getAddress());
-                    obj.put("password",App.getPassword());
-                    obj.put("email",App.getEmail());
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.POST, App.url + "user", obj, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject user = (JSONObject) response.get("user");
-                                    Toast.makeText(RegisterStep2Activity.this, "got user", Toast.LENGTH_LONG).show();
-                                    if(user.has("token")){
-                                        String token = user.getString("token");
-                                        App.setToken(token);
-                                        Toast.makeText(RegisterStep2Activity.this, App.getToken(), Toast.LENGTH_LONG).show();
-                                        nextActivity();
-                                    } else {
-                                        Toast.makeText(RegisterStep2Activity.this, "No Such User", Toast.LENGTH_LONG).show();
-                                        registerAlertDialog();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                error.printStackTrace();
-                                Toast.makeText(RegisterStep2Activity.this, "Login Server Failed", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                /*    Finished communication to server    */
-                RequestQueue queue = Volley.newRequestQueue(App.getContext());
-                queue.add(jsonObjectRequest);
-
-                //openRegisterStep3Activity();
+                nextActivity();
             }
         });
     }
@@ -139,3 +90,36 @@ public class RegisterStep2Activity extends AppCompatActivity {
         alert.show();
     }
 }
+
+
+
+
+/*
+JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, App.url + "user", obj, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    JSONObject user = (JSONObject) response.get("user");
+                                    Toast.makeText(RegisterStep2Activity.this, "got user", Toast.LENGTH_LONG).show();
+                                    if(user.has("token")){
+                                        String token = user.getString("token");
+                                        App.setToken(token);
+                                        Toast.makeText(RegisterStep2Activity.this, App.getToken(), Toast.LENGTH_LONG).show();
+                                        nextActivity();
+                                    } else {
+                                        Toast.makeText(RegisterStep2Activity.this, "No Such User", Toast.LENGTH_LONG).show();
+                                        registerAlertDialog();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                                Toast.makeText(RegisterStep2Activity.this, "Login Server Failed", Toast.LENGTH_LONG).show();
+                            }
+                        });
+ */

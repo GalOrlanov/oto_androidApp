@@ -14,19 +14,39 @@
             android:icon="@drawable/ic_location"
             android:title="Map" />
 
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_share"
+            android:title="Share" />
+
+        <item
+            android:id="@+id/nav_find"
+            android:icon="@drawable/quantum_ic_search_grey600_24"
+            android:title="Find" />
+
+        <item
+            android:id="@+id/nav_suggestride"
+            android:icon="@drawable/ic_car"
+            android:title="Your suggest ride" />
+
+        <item
+            android:id="@+id/nav_upcoming"
+            android:icon="@drawable/ic_car"
+            android:title="Upcoming carpool"/>
+
+
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@drawable/ic_star"
+            android:title="Rate your ride"/>
 
     </group>
     <item android:title="Communication">
         <menu>
             <item
-                android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share"
-                android:title="Share" />
+                android:title="communicate with your driver" />
 
-            <item
-                android:id="@+id/nav_find"
-                android:icon="@drawable/ic_car"
-                android:title="Find" />
         </menu>
     </item>
 </menu>

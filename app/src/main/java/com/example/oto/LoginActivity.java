@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +35,15 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.firebase.client.Firebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,23 +62,48 @@ public class LoginActivity extends AppCompatActivity {
     static final int FACEBOOK_SIGN = 456;
     static final int GOOGLE_SIGN = 123;
 
+
+    Button btn_login;
+    EditText email_login;
+    EditText password_login;
+    String tokenIdFirebase;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Google Login
+
+        /*//Google Login
         if (requestCode == GOOGLE_SIGN) {
 
         }
         //Facebook Login
         else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
-        }
+        }*/
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        FirebaseApp.initializeApp(this);
+        App.mAuth = FirebaseAuth.getInstance();
+
+        App.mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() != null){
+                  //  openMainPageActivity();
+                   // Log.i("login activity", "onAuthStateChanged: " + App.getUID());
+
+                }
+            }
+        };
+
+        btn_login = findViewById(R.id.login_button);
+        email_login = findViewById(R.id.email_login);
+        password_login = findViewById(R.id.password_login);
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -93,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         mDialog.dismiss();
                         Log.d("response", response.toString());
+                        Log.i("token",App.getToken());
                         getData(object);
                     }
                 });
@@ -123,54 +160,23 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(this, App.url, Toast.LENGTH_LONG).show();
 
-        Button btn_login = findViewById(R.id.login_button);
-        final EditText email_login = findViewById(R.id.email_login);
-        final EditText password_login = findViewById(R.id.password_login);
-
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final ProgressDialog pDialog = new ProgressDialog(LoginActivity.this);
+                pDialog.setMessage("Loading...");
+                pDialog.setProgressStyle(pDialog.STYLE_SPINNER);
+                pDialog.show();
+                startSignIn();
+               // Log.i("login activity", "onAuthStateChanged: " + App.getUID());
 
-                JSONObject obj = new JSONObject();
-                try {
-                    obj.put("email", email_login.getText().toString());
-                    obj.put("password", password_login.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.POST, App.url + "user/login", obj, new Response.Listener<JSONObject>() {
 
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject user = (JSONObject) response.get("user");
-
-                                    if (user.has("token")) {
-                                        String token = user.getString("token");
-                                        App.setToken(token);
-                                        Toast.makeText(LoginActivity.this, App.getToken(), Toast.LENGTH_LONG).show();
-                                        openMainPageActivity();
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, "No Such User", Toast.LENGTH_LONG).show();
-                                        loginAlertDialog();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                error.printStackTrace();
-                                Toast.makeText(LoginActivity.this, "Login Server Failed", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                RequestQueue queue = Volley.newRequestQueue(App.getContext());
-                queue.add(jsonObjectRequest);
             }
         });
+
+
+
+
 
         /*   Finish communication with server   */
     }
@@ -214,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void loginAlertDialog() {
+    public  void loginAlertDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Suggestion");
         alert.setMessage("You'r Not Signed In.\n" + "Do You Want To Register");
@@ -231,4 +237,23 @@ public class LoginActivity extends AppCompatActivity {
         });
         alert.show();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        App.mAuth.addAuthStateListener(App.mAuthListener);
+    }
+
+    public void startSignIn() {
+      final   String email = email_login.getText().toString();
+      final   String password = password_login.getText().toString();
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(LoginActivity.this, "Fields Are Empty", Toast.LENGTH_LONG).show();
+        } else {
+
+            App.conectTofireBase(email,password);
+        }
+    }
+
+
 }

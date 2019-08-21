@@ -49,7 +49,7 @@ private DrawerLayout drawer;
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ProfileFragment()).commit();
                 break;
             case R.id.nav_map:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new drive_fragment()).commit();
                 break;
 
             case R.id.nav_share:
@@ -60,6 +60,22 @@ private DrawerLayout drawer;
                 Intent intent = new Intent(MainPageActivity.this, FindActivity.class);
                 startActivity(intent);
                 break;
+                case R.id.nav_suggestride: Intent intent_sh = new Intent(MainPageActivity.this, SuggestedListActivity.class);
+                startActivity(intent_sh);
+                break;
+
+            case R.id.nav_upcoming:
+                Intent intent_sl = new Intent(MainPageActivity.this, UpcomingListActivity.class);
+                startActivity(intent_sl);
+                break;
+            case R.id.nav_rate:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new RateFragment()).commit();
+                break;
+
+
+
+
+
 
         }
         drawer.closeDrawer(GravityCompat.START);

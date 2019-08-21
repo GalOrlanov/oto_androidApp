@@ -1,67 +1,140 @@
 package com.example.oto;
 
-import android.app.DatePickerDialog;
+
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
+import android.widget.CheckBox;
+import android.widget.Toast;
 
-import java.util.Calendar;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RegisterStep4Activity extends AppCompatActivity {
-    Button button_to_register_5;
-
-    EditText datePicked;
-    DatePickerDialog.OnDateSetListener myDateSetListener;
-    Calendar cal;
+    Button btn_to_main_page;
+    CheckBox checkBox_terms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.conectTofireBase(App.getEmail(),App.getPassword());
         setContentView(R.layout.activity_register_step4);
-
-        button_to_register_5 = (Button) findViewById(R.id.buttonToRegisterStep5);
-        button_to_register_5.setOnClickListener(new View.OnClickListener() {
+        checkBox_terms = findViewById(R.id.reg4_check_box_terms);
+        btn_to_main_page = findViewById(R.id.reg4_btn_to_main_page);
+        btn_to_main_page.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openRegisterStep5Activity(v);
+
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("uid", App.getUID());
+                    obj.put("email", App.getEmail());
+                    obj.put("password", App.getPassword());
+                    obj.put("fullname", App.getFirstName()+" "+App.getLastName());
+                    obj.put("birthday", App.getBirthday());
+                    obj.put("gender", App.getGender());
+                    obj.put("terms", true);
+                    obj.put("brand", App.getCarModel());
+                    obj.put("model", App.getModel());
+                    obj.put("color", App.getCarColor());
+                    obj.put("license", App.getLicense());
+                    obj.put("phone", App.getPhone());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, App.url + "user", obj, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String requestStatus = response.toString();
+                                    openMainPageActivity();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                                Toast.makeText(RegisterStep4Activity.this, "Login Server Failed", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                RequestQueue queue = Volley.newRequestQueue(App.getContext());
+                queue.add(jsonObjectRequest);
+
+                openMainPageActivity();
             }
         });
-
-        datePicked = findViewById(R.id.editTextExpiryDate);
-        //datePicked.setText("06.05");
-        datePicked.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                //int day = cal.get(Calender.DAY_OF_MONTH);
-                int day = 01;
-                DatePickerDialog dialog = new DatePickerDialog(RegisterStep4Activity.this, android.R.style.Theme_Holo_Dialog_MinWidth, myDateSetListener, year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getDatePicker().findViewById(getResources().getIdentifier("day","id","android")).setVisibility(View.GONE);
-                dialog.setTitle("Choose Expiry Date");
-                dialog.show();
-            }
-        });
-
-        myDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = month+"/"+year;
-                datePicked.setText(date);
-            }
-        };
     }
 
-    public void openRegisterStep5Activity(View v){
-        Intent intent=new Intent(this, RegisterStep5Activity.class);
-        startActivity(intent);
+    public void openMainPageActivity() {
+        if (checkBox_terms.isChecked()) {
+            Toast.makeText(RegisterStep4Activity.this, "Checked!", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainPageActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(RegisterStep4Activity.this, "Not Checked!", Toast.LENGTH_LONG).show();
+            return;
+        }
     }
+
+
+
+
+
+    /*
+    JSONObject obj = new JSONObject();
+
+                try{
+                    Toast.makeText(RegisterStep2Activity.this, App.getUID(), Toast.LENGTH_LONG).show();
+                    obj.put("uid", App.getUID());
+                    //obj.put("firstname", App.getFirstName());
+                    //obj.put("lastname",App.getLastName());
+                    obj.put("fullname",App.getFirstName()+" "+App.getLastName());
+                    obj.put("phone",App.getPhone());
+                    obj.put("address",App.getAddress());
+                    obj.put("password",App.getPassword());
+                    obj.put("email",App.getEmail());
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, App.url + "user", obj, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    Toast.makeText(RegisterStep2Activity.this, "got user", Toast.LENGTH_LONG).show();
+                                    if(response.toString().compareTo("OK") == 0){
+                                        nextActivity();
+                                    } else {
+                                        Toast.makeText(RegisterStep2Activity.this, "No Such User", Toast.LENGTH_LONG).show();
+                                        registerAlertDialog();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                                Toast.makeText(RegisterStep2Activity.this, "Login Server Failed", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                RequestQueue queue = Volley.newRequestQueue(App.getContext());
+                queue.add(jsonObjectRequest);
+     */
+
+
 }
